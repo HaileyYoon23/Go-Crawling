@@ -26,13 +26,13 @@ const eomiBaseUrl = "https://eomisae.co.kr"
 const eomiResourcePath = "/index.php?mid=fs&sort_index=regdate&order_type=desc&page="
 const eomiTrSelector = "div.card_el"
 const eomiSubSelector = "h3 > a"
-const veomitTitleSelector = "#D_ > div._wrapper > div._hd.clear > div._section > h2 > a"
+const eomiTitleSelector = "#D_ > div._wrapper > div._hd.clear > div._section > h2 > a"
 const eomiDateSelector = "span:nth-of-type(2)"
 const eomiContentSelector = "article > div:nth-of-type(1)"
 
 // [ppomppu 뽐뿌국내], ppomin
 // http://www.ppomppu.co.kr/zboard/zboard.php?id=ppomppu&divpage=63&page=1
-const ppominBaseUrl = "http://www.ppomppu.co.kr"
+const ppominBaseUrl = "https://www.ppomppu.co.kr"
 const ppominResourcePath = "/zboard/zboard.php?id=ppomppu&divpage=63&page="
 const ppominTrSelector = "tr.list0, tr.list1"
 const ppominSubSelector = "td[valign=\"middle\"] > a"
@@ -43,8 +43,9 @@ const ppominContentSelector = "td.board-contents[align=\"left\"]"
 
 // [ppomppu 뽑뿌해외], ppomex
 // http://www.ppomppu.co.kr/zboard/zboard.php?id=ppomppu4&divpage=21&page=1
-const ppomexBaseUrl = "http://www.ppomppu.co.kr"
+const ppomexBaseUrl = "https://www.ppomppu.co.kr"
 const ppomexResourcePath = "/zboard/zboard.php?id=ppomppu4&divpage=21&page="
+const ppomexSubLinkPath = "/zboard/"
 const ppomexTrSelector = "tr.list0, tr.list1"
 const ppomexSubSelector = "td[valign=\"middle\"] > a"
 const ppomexTitleSelector = "td[valign=\"middle\"] > a"

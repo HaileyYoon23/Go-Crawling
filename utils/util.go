@@ -127,3 +127,16 @@ func checkCode(res *http.Response) {
 func CleanString(str string) string {
 	return strings.Join(strings.Fields(strings.TrimSpace(str)), " ")
 }
+
+func getDocument(url string) (*goquery.Document) {
+	response, error := http.Get(url)
+	checkErr(error)
+	checkCode(response)
+
+	defer response.Body.Close()
+
+	doc, docErr := goquery.NewDocumentFromReader(response.Body)
+	checkErr(docErr)
+
+	return doc
+}
