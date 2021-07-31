@@ -1,7 +1,10 @@
 package utils
+
 import (
 	"encoding/csv"
 	"fmt"
+	"hash/fnv"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -35,7 +38,7 @@ func Scrapper(query string) {
 
 func writeJobs(jobs []Indeed) {
 	file, err := os.Create("jobs.csv")
-	checkErr(err)
+	CheckErr(err)
 
 	w := csv.NewWriter(file)
 	//Write data to the file
@@ -44,12 +47,12 @@ func writeJobs(jobs []Indeed) {
 	header := []string{"ID", "TITLE", "LOCATION", "SUMMARY"}
 
 	wErr := w.Write(header)
-	checkErr(wErr)
+	CheckErr(wErr)
 
 	for _, job := range jobs {
 		jobSlice := []string{"https://kr.indeed.com/viewjob?jk=" + job.id, job.title, job.location, job.summary}
 		jobErr := w.Write(jobSlice)
-		checkErr(jobErr)
+		CheckErr(jobErr)
 	}
 }
 
@@ -60,13 +63,13 @@ func getCard(page int, baseURL string, c1 chan []Indeed) {
 	fmt.Println(URL)
 
 	res, err := http.Get(URL)
-	checkErr(err)
+	CheckErr(err)
 	checkCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	checkErr(err)
+	CheckErr(err)
 	searchCards := doc.Find(".jobsearch-SerpJobCard")
 
 	searchCards.Each(func(i int, s *goquery.Selection) {
@@ -96,13 +99,13 @@ func extractJob(s *goquery.Selection, c chan<- Indeed) {
 func getPages(baseURL string) int {
 	pages := 0
 	res, err := http.Get(baseURL)
-	checkErr(err)
+	CheckErr(err)
 	checkCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	checkErr(err)
+	CheckErr(err)
 
 	doc.Find(".pagination-list").Each(func(i int, s *goquery.Selection) {
 		pages = s.Find("li").Length()
@@ -111,7 +114,7 @@ func getPages(baseURL string) int {
 	return pages
 }
 
-func checkErr(err error) {
+func CheckErr(err error) {
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -128,15 +131,38 @@ func CleanString(str string) string {
 	return strings.Join(strings.Fields(strings.TrimSpace(str)), " ")
 }
 
-func getDocument(url string) (*goquery.Document) {
+func GetDocument(url string) (*goquery.Document) {
 	response, error := http.Get(url)
-	checkErr(error)
+	CheckErr(error)
 	checkCode(response)
 
 	defer response.Body.Close()
 
 	doc, docErr := goquery.NewDocumentFromReader(response.Body)
-	checkErr(docErr)
+	CheckErr(docErr)
 
 	return doc
+}
+
+func Hash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
+}
+
+func DownloadFile(URL, fileName string) {
+	response, error := http.Get(URL)
+	CheckErr(error)
+	checkCode(response)
+
+	defer response.Body.Close()
+
+	//Create a empty file
+	file, error := os.Create(fileName)
+	CheckErr(error)
+	defer file.Close()
+
+	//Write the contents to the file
+	_, error = io.Copy(file, response.Body)
+	CheckErr(error)
 }
