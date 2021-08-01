@@ -8,13 +8,15 @@ import (
 	scrap "github.com/jungAcat/Go-Crawling/scrap"
 	util "github.com/jungAcat/Go-Crawling/utils"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"strings"
 	"sync"
+	"time"
 )
-// var fileName = "jobs.csv"
 
 const testNum = 0
 
@@ -40,8 +42,19 @@ func main() {
 	defer db.Close()
 
 	activateScrap(db, testNum)
+	time.Sleep(time.Second)
 	//DBActivate(db)
 	//printTest(testNum)
+	util.UploadToTenth()
+	time.Sleep(time.Second)
+	util.RemoveFile("./ImageNameList.txt")
+}
+
+func ShellScript(fileName string) {
+	_, err := exec.Command("/bin/sh", fileName).Output()
+	if err != nil {
+	log.Fatal(err)
+	}
 }
 
 func printTest(testNumber int) {

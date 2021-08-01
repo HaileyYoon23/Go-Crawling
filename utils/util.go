@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bufio"
 	"crypto/sha1"
 	"database/sql"
 	"encoding/hex"
@@ -9,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -94,4 +96,26 @@ func IsDuplicate(db *sql.DB, hash string) bool {
 	}
 
 	return result
+}
+
+func UploadToTenth() {
+	_, err := exec.Command("/bin/sh", "test2.sh").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func RemoveFile(fileName string) {
+	file, err := os.Open(fileName)
+	CheckErr(err)
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		err = os.Remove(scanner.Text())
+		CheckErr(err)
+	}
+	file.Close()
+
+	err = os.Remove(fileName)
+	CheckErr(err)
 }

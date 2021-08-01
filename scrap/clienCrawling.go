@@ -1,10 +1,13 @@
 package scrap
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	util "github.com/jungAcat/Go-Crawling/utils"
+	"io"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -17,11 +20,10 @@ func ClienScrapStart(db *sql.DB) {
 
 	doc := util.GetDocument(url)
 
-	//var imageNameBuffer 	bytes.Buffer
-	//
-	//// 1.
-	//f1, err := os.Create("./ImageNameList.txt")
-	//util.CheckErr(err)
+	var ImageNameBuffer bytes.Buffer
+
+	ImageNameFile, err := os.Create("./ImageNameList.txt")
+	util.CheckErr(err)
 
 	searchTR		:= doc.Find(util.ClienTrSelector)
 
@@ -40,7 +42,7 @@ func ClienScrapStart(db *sql.DB) {
 		linkHash			:= util.Hash(subLink)
 
 		if util.IsDuplicate(db, linkHash) {
-			fmt.Println("!!duplicate!!\n"+title+"\n")
+			// Duplicate : Skip
 		} else {
 			docSubLink 	:= util.GetDocument(subLink)
 
@@ -54,25 +56,25 @@ func ClienScrapStart(db *sql.DB) {
 			// Image Download
 			if len(imgStr) > 1 {
 				isImageExist = 1
-				//	// Image Download
-				//	fileFullName 	:= strconv.Itoa(int(linkHash)) + ".png"
-				//
-				//	imageNameBuffer.WriteString(fileFullName + "\n")
-				//
-				//	//imgURL	:= imgStr
-				//	//util.DownloadFile(imgURL, fileFullName)
-				//
-				//} else {
-				//	fmt.Println("Image Null")
+					// Image Download
+					fileFullName 	:= linkHash + ".png"
+
+					ImageNameBuffer.WriteString(fileFullName + "\n")
+
+					imgURL	:= imgStr
+					util.DownloadFile(imgURL, fileFullName)
+
+				} else {
+					fmt.Println("Image Null")
 			}
 
 			newPost	:= util.Post{title, date, content, isImageExist, linkHash, 0,1, subLink}
-			fmt.Println(newPost)
+
 			util.InsertPost(db, &newPost)
 		}
 	})
 
-	//_, err = io.WriteString(f1, imageNameBuffer.String())
-	//util.CheckErr(err)
+	_, err = io.WriteString(ImageNameFile, ImageNameBuffer.String())
+	util.CheckErr(err)
 
 }
