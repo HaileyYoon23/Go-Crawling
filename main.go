@@ -37,6 +37,7 @@ func main() {
 	e.Logger.Fatal(e.Start(":1323"))*/
 
 	// imgTest()
+	fmt.Println("Start!")
 	db, err := sql.Open("mysql", "root:315931@tcp(127.0.0.1:3306)/testdb")
 	util.CheckErr(err)
 	defer db.Close()
@@ -45,9 +46,8 @@ func main() {
 	time.Sleep(time.Second)
 	//DBActivate(db)
 	//printTest(testNum)
-	util.UploadToTenth()
-	time.Sleep(time.Second)
-	util.RemoveFile("./ImageNameList.txt")
+	//util.UploadToTenth()
+	//time.Sleep(time.Second)
 }
 
 func ShellScript(fileName string) {

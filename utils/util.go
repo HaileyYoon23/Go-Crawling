@@ -111,6 +111,7 @@ func RemoveFile(fileName string) {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
+		fmt.Println(scanner.Text())
 		err = os.Remove(scanner.Text())
 		CheckErr(err)
 	}
