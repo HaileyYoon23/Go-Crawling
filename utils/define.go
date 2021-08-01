@@ -8,12 +8,13 @@ type Indeed struct {
 	summary  	string
 }
 
-type Data struct {
-	siteId		int
-	category	string
-	title 		string
-	date		string
-	content		string
-	link		string
-
+type Post struct {
+	Title			string
+	Date			string
+	Content			string
+	Is_image_exist	int
+	Hash			string
+	Is_notified		int
+	Site_id			int
+	Link			string
 }

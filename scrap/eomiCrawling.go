@@ -37,9 +37,9 @@ func EomiScrapStart() {
 
 		docSubLink 	:= util.GetDocument(subLink)
 
-		EomiResultTitle = append(ClienResultTitle, docSubLink.Find(util.EomiTitleSelector).Text())
-		EomiResultDate 		= append(ClienResultDate, docSubLink.Find(util.EomiDateSelector).Text())
-		EomiResultContent  	= append(ClienResultContent, docSubLink.Find(util.EomiContentSelector).Text())
+		EomiResultTitle = append(EomiResultTitle, docSubLink.Find(util.EomiTitleSelector).Text())
+		EomiResultDate 		= append(EomiResultDate, docSubLink.Find(util.EomiDateSelector).Text())
+		EomiResultContent  	= append(EomiResultContent, docSubLink.Find(util.EomiContentSelector).Text())
 
 	})
 }

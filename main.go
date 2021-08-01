@@ -1,7 +1,10 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	_ "github.com/go-sql-driver/mysql"
 	scrap "github.com/jungAcat/Go-Crawling/scrap"
 	util "github.com/jungAcat/Go-Crawling/utils"
 	"io"
@@ -10,21 +13,20 @@ import (
 	"os"
 	"strings"
 	"sync"
-
-	"fmt"
 )
 // var fileName = "jobs.csv"
 
-const testNumber = 0
+const testNum = 0
 
 var resultTitle 	*[]string
 var resultCategory 	*[]string
 var resultAnchor	*[]string
 var resultLink		*[]string
 var resultDate		*[]string
+var resultUpDate	 *[]string
 var resultContent	*[]string
 var resultImg		*[]string
-var resultHash		*[]uint32
+var resultHash		*[]string
 
 func main() {
 	/*e := echo.New()
@@ -33,8 +35,16 @@ func main() {
 	e.Logger.Fatal(e.Start(":1323"))*/
 
 	// imgTest()
+	db, err := sql.Open("mysql", "root:315931@tcp(127.0.0.1:3306)/testdb")
+	util.CheckErr(err)
+	defer db.Close()
 
-	decideTestNum(testNumber)
+	activateScrap(db, testNum)
+	//DBActivate(db)
+	//printTest(testNum)
+}
+
+func printTest(testNumber int) {
 	fmt.Println("!Title!")
 	for _, v := range *resultTitle {
 		fmt.Println(util.CleanString(v))
@@ -58,6 +68,10 @@ func main() {
 	for _, v := range *resultDate {
 		fmt.Println(util.CleanString(v))
 	}
+	fmt.Println("!UpdateDate!")
+	for _, v := range *resultUpDate {
+		fmt.Println(util.CleanString(v))
+	}
 	fmt.Println("!Content!")
 	for _, v := range *resultContent {
 		fmt.Println(util.CleanString(v) + "\n")
@@ -73,6 +87,32 @@ func main() {
 }
 
 
+func DBActivate(db *sql.DB) {
+	// 복수 Row를 갖는 SQL 쿼리
+	var id int
+	var title string
+	var date string
+	var content string
+	var is_image_exist int
+	var hash string
+	var is_notified int
+	var site_id int
+	var link string
+	rows, err := db.Query("SELECT id, title,date,content,is_image_exist,hash,is_notified,site_id,link  FROM posts")
+	util.CheckErr(err)
+
+	defer rows.Close() //반드시 닫는다 (지연하여 닫기)
+
+	for rows.Next() {
+		err := rows.Scan(&id, &title,&date,&content,&is_image_exist,&hash,&is_notified,&site_id,&link)
+		util.CheckErr(err)
+		fmt.Println(id, title,date,content,is_image_exist,"\nHASH: ",hash,is_notified,site_id,link)
+	}
+}
+
+
+
+
 /*
 func handler(c echo.Context) error {
 	return c.File("./resources/home.html")
@@ -85,63 +125,25 @@ func handleFunc(c echo.Context) error {
 	return c.Attachment(fileName, query + ".csv")
 }*/
 
-func decideTestNum(i int) {
-	switch i {
+func activateScrap(db *sql.DB, testNumber int) {
+	switch testNumber {
 	case 0:				// Clien
-		scrap.ClienScrapStart()
-		resultTitle 	= &(scrap.ClienResultTitle)
-		resultCategory 	= &(scrap.ClienResultCategory)
-		resultAnchor	= &(scrap.ClienResultAnchor)
-		resultLink		= &(scrap.ClienResultLink)
-		resultDate		= &(scrap.ClienResultDate)
-		resultContent	= &(scrap.ClienResultContent)
-		resultImg		= &(scrap.ClienResultImg)
-		resultHash		= &(scrap.ClienResultHash)
+		scrap.ClienScrapStart(db)
 
 	case 1:				// Cool
 		scrap.CoolScrapStart()
-		resultTitle 	= &(scrap.CoolResultTitle)
-		resultCategory 	= &(scrap.CoolResultCategory)
-		resultAnchor	= &(scrap.CoolResultAnchor)
-		resultLink		= &(scrap.CoolResultLink)
-		resultDate		= &(scrap.CoolResultDate)
-		resultContent	= &(scrap.CoolResultContent)
 
 	case 2:				// Eomi
 		scrap.EomiScrapStart()
-		resultTitle 	= &(scrap.EomiResultTitle)
-		//resultCategory 	= &(scrap.EomiResultCategory)
-		resultAnchor	= &(scrap.EomiResultAnchor)
-		resultLink		= &(scrap.EomiResultLink)
-		resultDate		= &(scrap.EomiResultDate)
-		resultContent	= &(scrap.EomiResultContent)
 
 	case 3:				// Ppomex
 		scrap.PpomexScrapStart()
-		resultTitle 	= &(scrap.PpomexResultTitle)
-		resultCategory 	= &(scrap.PpomexResultCategory)
-		resultAnchor	= &(scrap.PpomexResultAnchor)
-		resultLink		= &(scrap.PpomexResultLink)
-		resultDate		= &(scrap.PpomexResultDate)
-		resultContent	= &(scrap.PpomexResultContent)
 
 	case 4:				// Ppomin
 		scrap.PpominScrapStart()
-		resultTitle 	= &(scrap.PpominResultTitle)
-		resultCategory 	= &(scrap.PpominResultCategory)
-		resultAnchor	= &(scrap.PpominResultAnchor)
-		resultLink		= &(scrap.PpominResultLink)
-		resultDate		= &(scrap.PpominResultDate)
-		resultContent	= &(scrap.PpominResultContent)
 
 	case 5:				// Quas
 		scrap.QuasScrapStart()
-		resultTitle 	= &(scrap.QuasResultTitle)
-		resultCategory 	= &(scrap.QuasResultCategory)
-		resultAnchor	= &(scrap.QuasResultAnchor)
-		resultLink		= &(scrap.QuasResultLink)
-		resultDate		= &(scrap.QuasResultDate)
-		resultContent	= &(scrap.QuasResultContent)
 	}
 }
 
